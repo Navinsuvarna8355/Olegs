@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -506,7 +507,6 @@ html,body{background:var(--bg);color:var(--t1);font-family:'Segoe UI',sans-serif
       document.getElementById('symSearch').value = name;
       document.getElementById('symSel').value = val;
       document.getElementById('symDrop').style.display = 'none';
-      // Trigger symbol change
       curIK = val;
       $('symLbl').textContent = name;
       cData = [];
@@ -524,7 +524,6 @@ html,body{background:var(--bg);color:var(--t1);font-family:'Segoe UI',sans-serif
       loadCandles(curIK, curTF, false);
     }
 
-    // Hover effect for dropdown items
     document.addEventListener('mouseover', function(e) {
       if (e.target.classList.contains('sym-opt')) {
         e.target.style.background = 'rgba(59,130,246,0.15)';
@@ -536,7 +535,6 @@ html,body{background:var(--bg);color:var(--t1);font-family:'Segoe UI',sans-serif
       }
     });
 
-    // Init: set default
     window.addEventListener('DOMContentLoaded', function() {
       document.getElementById('symSearch').value = 'NIFTY 50';
       document.getElementById('symSel').value = 'NSE_INDEX|Nifty 50';
@@ -575,7 +573,6 @@ html,body{background:var(--bg);color:var(--t1);font-family:'Segoe UI',sans-serif
       </div>
       <div class="trade-body" id="tradeBody">
 
-        <!-- SESSION P&L HEADER -->
         <div id="sessionPL" style="background:linear-gradient(135deg,#070b10,#0d1117);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:10px;">
           <div style="font-size:9px;color:var(--t2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Session P&L</div>
           <div id="sessionPLVal" style="font-size:22px;font-weight:800;color:var(--green);">₹0.00</div>
@@ -586,9 +583,7 @@ html,body{background:var(--bg);color:var(--t1);font-family:'Segoe UI',sans-serif
           </div>
         </div>
 
-        <!-- ACTIVE TRADE CARD (broker-style) -->
         <div id="activeTrade" style="display:none;border-radius:8px;margin-bottom:10px;overflow:hidden;">
-          <!-- Header bar: direction + time -->
           <div id="activeTradeHdr" style="padding:8px 12px;display:flex;justify-content:space-between;align-items:center;">
             <div style="display:flex;align-items:center;gap:8px;">
               <span id="atDir" style="font-size:12px;font-weight:800;"></span>
@@ -596,7 +591,6 @@ html,body{background:var(--bg);color:var(--t1);font-family:'Segoe UI',sans-serif
             </div>
             <span id="atTime" style="font-size:10px;opacity:0.7;"></span>
           </div>
-          <!-- P&L live -->
           <div style="background:rgba(0,0,0,0.3);padding:10px 12px;">
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:10px;">
               <div style="text-align:center;"><div style="font-size:8px;color:rgba(255,255,255,0.5);text-transform:uppercase;">Entry</div><div id="atEntry" style="font-size:12px;font-weight:700;color:#fff;"></div></div>
@@ -604,7 +598,6 @@ html,body{background:var(--bg);color:var(--t1);font-family:'Segoe UI',sans-serif
               <div style="text-align:center;"><div style="font-size:8px;color:rgba(255,255,255,0.5);text-transform:uppercase;">P&L pts</div><div id="atPLpts" style="font-size:12px;font-weight:700;"></div></div>
               <div style="text-align:center;"><div style="font-size:8px;color:rgba(255,255,255,0.5);text-transform:uppercase;">P&L ₹</div><div id="atPLrs" style="font-size:12px;font-weight:700;"></div></div>
             </div>
-            <!-- SL / TP / Trail row -->
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px;font-size:10px;">
               <div style="background:rgba(255,51,102,0.12);border:1px solid rgba(255,51,102,0.3);border-radius:5px;padding:5px 8px;">
                 <div style="color:rgba(255,255,255,0.5);font-size:8px;">STOP LOSS</div>
@@ -619,19 +612,16 @@ html,body{background:var(--bg);color:var(--t1);font-family:'Segoe UI',sans-serif
                 <div id="atTrailval" style="color:#fbbf24;font-weight:700;font-size:11px;cursor:pointer;" onclick="toggleTrailSL()">OFF</div>
               </div>
             </div>
-            <!-- Close button -->
             <button onclick="manualClose()" style="width:100%;background:rgba(255,51,102,0.9);color:#fff;border:none;padding:9px;border-radius:6px;font-weight:800;font-size:12px;cursor:pointer;letter-spacing:0.5px;">
               CLOSE TRADE
             </button>
           </div>
         </div>
 
-        <!-- NO ACTIVE TRADE -->
         <div id="noTrade" style="text-align:center;padding:14px;color:var(--t2);font-size:11px;border:1px dashed var(--border);border-radius:8px;margin-bottom:10px;">
           No open position
         </div>
 
-        <!-- CONFIG -->
         <div class="trade-mode" style="margin-bottom:8px;">
           <label><input type="radio" name="tradeMode" value="paper" checked onchange="setTradeMode()"> Paper</label>
           <label><input type="radio" name="tradeMode" value="real" onchange="setTradeMode()"> Real</label>
@@ -642,11 +632,9 @@ html,body{background:var(--bg);color:var(--t1);font-family:'Segoe UI',sans-serif
           <div><label style="font-size:9px;color:var(--t2);">TP %</label><input type="number" id="tradeTP" value="1.5" min="0.1" step="0.1" style="width:100%;background:var(--bg);border:1px solid var(--border);padding:6px;color:var(--t1);border-radius:4px;font-size:11px;"></div>
         </div>
 
-        <!-- BOT START/STOP -->
         <div class="trade-status stopped" id="tradeStatus">Stopped</div>
         <button class="start" id="tradeBtn" onclick="toggleTradeBot()">▶ Start Bot</button>
 
-        <!-- TRADE LOG -->
         <div id="tradeLog" style="margin-top:8px;max-height:180px;overflow-y:auto;"></div>
       </div>
     </div>
@@ -716,7 +704,6 @@ var tradeLog = [];
 var tradeEntry = {};
 var totalProfit = 0, totalLoss = 0, totalTrades = 0;
 
-// ── FIX #1: prevCB/prevPB globals reset properly on fetchChain ──
 var prevCB = 0, prevPB = 0;
 var signalCount = 0, prevSignal = null;
 var require2Consecutive = true;
@@ -724,25 +711,21 @@ var skipHighPCR = true;
 var highPCRThreshold = 1.2;
 var supportLevels = [], resistanceLevels = [], maxPainStrike = 0;
 
-// ── ANTI-REPAINT STATE ──
-// Signal is only drawn on chart after CONFIRM_THRESHOLD consecutive same-direction chain refreshes
-// This prevents early-day noise from causing marker to move/repaint
-var pendingSignal   = '';   // raw signal from current refresh
-var pendingCount    = 0;    // consecutive count of same pending signal
-var confirmedSignal = '';   // last signal actually drawn on chart
-var CONFIRM_THRESHOLD = 2;  // 2 consecutive refreshes needed before chart marker
-var OI_MIN_THRESHOLD = 500000; // min total OI build — below = early day noise, skip
+var pendingSignal   = '';
+var pendingCount    = 0;
+var confirmedSignal = '';
+var CONFIRM_THRESHOLD = 2;
+var OI_MIN_THRESHOLD = 500000;
 
-// ── REVERSAL DETECTION STATE ──
-var prevNetCall       = 0;  // previous netCallWrite
-var prevNetPut        = 0;  // previous netPutWrite
-var prevPCR           = 0;  // previous PCR value
-var prevCU_rev        = 0;  // previous CALL_OI_UNWIND
-var prevPU_rev        = 0;  // previous PUT_OI_UNWIND
-var pcrRisingCount    = 0;  // consecutive ticks PCR has been rising
-var pcrFallingCount   = 0;  // consecutive ticks PCR has been falling
-var reversalAlert     = ''; // current active reversal alert type
-var prevReversalAlert = ''; // last logged reversal alert (to avoid duplicate log)
+var prevNetCall       = 0;
+var prevNetPut        = 0;
+var prevPCR           = 0;
+var prevCU_rev        = 0;
+var prevPU_rev        = 0;
+var pcrRisingCount    = 0;
+var pcrFallingCount   = 0;
+var reversalAlert     = '';
+var prevReversalAlert = '';
 
 function saveTradeState() {
   try {
@@ -794,7 +777,6 @@ function loadTradeState() {
     updateTradeStats();
     updateSessionStats();
     renderClosedTrades();
-    // Restore active trade UI
     if (tradeEntry && tradeEntry.signal) {
       var lastSpot = parseFloat($('mSpot') ? $('mSpot').textContent : 0) || tradeEntry.entry;
       updateActiveTrade(lastSpot);
@@ -844,11 +826,8 @@ function initChart() {
     timeScale: {
       timeVisible: true,
       secondsVisible: false,
-      // Timestamps stored as fake-UTC (IST wall clock) — tell chart to show UTC directly
-      // This makes hover show correct IST time e.g. "09:15" not "03:45"
     },
     localization: {
-      // Force UTC display so fake-UTC timestamps show as IST
       locale: 'en-IN',
     }
   });
@@ -880,32 +859,22 @@ function initChart() {
 }
 
 function parseCandle(c) {
-  // Upstox returns IST timestamp: "2026-05-07T09:15:00+05:30"
-  // Strategy: store timestamp as "fake UTC" = actual IST time as if it were UTC
-  // This makes lightweight-charts display "09:15" on hover (correct IST time)
-  // without needing timezone conversion tricks
   var istUnix = 0;
   var ts = c[0];
 
   if (ts.indexOf('+05:30') >= 0) {
-    // Parse IST time directly: extract the local wall-clock time
-    // "2026-05-07T09:15:00+05:30" → wall clock = 09:15 IST
     var m = ts.match(/(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})/);
     if (m) {
-      // Build a "fake UTC" timestamp = wall clock time treated as UTC
       istUnix = Date.UTC(+m[1], +m[2]-1, +m[3], +m[4], +m[5], +m[6]) / 1000;
     }
   } else if (ts.indexOf('T') >= 0 || ts.indexOf(' ') >= 0) {
-    // Generic ISO or space-separated: parse as is, then shift to IST display
     var d = new Date(ts.replace(' ', 'T'));
     if (!isNaN(d.getTime())) {
-      // d.getTime() is UTC ms, convert to IST wall clock as "fake UTC"
       istUnix = Math.floor((d.getTime() + 19800000) / 1000);
     }
   }
 
   if (!istUnix) {
-    // Last resort: try direct parse
     var d2 = new Date(ts);
     istUnix = isNaN(d2.getTime()) ? 0 : Math.floor((d2.getTime() + 19800000) / 1000);
   }
@@ -915,13 +884,10 @@ function parseCandle(c) {
 
 function aggregateBars(minBars, targetMinutes) {
   if (!minBars || !minBars.length || !targetMinutes) return minBars;
-  // IST market opens at 09:15 = 09*60+15 = 555 minutes from midnight
-  // Bucket alignment: offset from 09:15 so candles start at 09:15, 09:20, etc.
-  var offsetSec = 555 * 60; // 09:15 in seconds from midnight
+  var offsetSec = 555 * 60;
   var bucketSec = targetMinutes * 60;
   var grouped = {};
   minBars.forEach(function(c) {
-    // c.time is "fake UTC" = IST wall clock as Unix seconds
     var secFromMidnight = c.time % 86400;
     var alignedSec = Math.floor((secFromMidnight - offsetSec) / bucketSec) * bucketSec + offsetSec;
     var bucket = c.time - secFromMidnight + alignedSec;
@@ -1004,8 +970,6 @@ async function liveUpdate() {
   if (!cfg || !cfg.intra) return;
   try {
     var enc = encodeURIComponent(curIK);
-
-    // Fetch intraday 1-min candles (always 1min base)
     var r = await go('https://api.upstox.com/v2/historical-candle/intraday/' + enc + '/1minute');
     if (!r || !r.data || !r.data.candles || !r.data.candles.length) return;
 
@@ -1013,26 +977,18 @@ async function liveUpdate() {
     $('lastUpd').textContent = 'Updated: ' + now.toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour12: false });
 
     var fresh1m = r.data.candles.map(parseCandle).sort(function(a, b) { return a.time - b.time; });
-
-    // Merge 1min candles into cData base (before aggregation)
-    // For 1min TF, directly use fresh1m
-    // For higher TFs, aggregate fresh1m to target TF
     var freshAgg = cfg.agg ? aggregateBars(fresh1m, cfg.agg) : fresh1m;
 
-    // ── SYNTHETIC LIVE CANDLE ──
-    // The last closed candle may be 1-5 min old
-    // Add a "forming" candle using LTP from the latest 1min tick
     var latestTick = fresh1m[fresh1m.length - 1];
     if (latestTick && freshAgg.length) {
       var lastAggTime = freshAgg[freshAgg.length - 1].time;
       var bucketSec = (cfg.agg || 1) * 60;
-      var offsetSec = 555 * 60; // 09:15
+      var offsetSec = 555 * 60;
       var latestSecFromMid = latestTick.time % 86400;
       var alignedSec = Math.floor((latestSecFromMid - offsetSec) / bucketSec) * bucketSec + offsetSec;
       var currentBucket = latestTick.time - latestSecFromMid + alignedSec;
 
       if (currentBucket > lastAggTime) {
-        // New bucket forming — add synthetic candle
         freshAgg.push({
           time:  currentBucket,
           open:  latestTick.open,
@@ -1041,7 +997,6 @@ async function liveUpdate() {
           close: latestTick.close
         });
       } else if (currentBucket === lastAggTime) {
-        // Same bucket — update the last candle with latest tick data
         var last = freshAgg[freshAgg.length - 1];
         last.high  = Math.max(last.high,  latestTick.high);
         last.low   = Math.min(last.low,   latestTick.low);
@@ -1049,12 +1004,10 @@ async function liveUpdate() {
       }
     }
 
-    // Merge freshAgg into cData
     var changed = false;
     freshAgg.forEach(function(nc) {
       var idx = cData.findIndex(function(c) { return c.time === nc.time; });
       if (idx >= 0) {
-        // Update existing — check if actually changed
         if (cData[idx].close !== nc.close || cData[idx].high !== nc.high || cData[idx].low !== nc.low) {
           cData[idx] = nc; changed = true;
         }
@@ -1063,17 +1016,14 @@ async function liveUpdate() {
       }
     });
 
-    if (!changed) return; // Nothing new — skip render
+    if (!changed) return;
 
     cData.sort(function(a, b) { return a.time - b.time; });
 
     if (cSeries && cData.length) {
-      // Use update() for last candle only if only last candle changed — much faster
       if (freshAgg.length <= 2) {
-        // Only last 1-2 candles updated — efficient path
         freshAgg.forEach(function(nc) { try { cSeries.update(nc); } catch(x) {} });
       } else {
-        // Multiple candles changed — full reload
         cSeries.setData(cData);
       }
     }
@@ -1085,10 +1035,8 @@ async function liveUpdate() {
     $('barInfo').textContent = cData.length + ' bars · ' + last.close.toFixed(2);
     $('cTime').textContent = fmtIST(last.time);
 
-    // Update active trade UI with latest price
     if (typeof updateActiveTrade === 'function') updateActiveTrade(last.close);
 
-    // Update EMA legend values
     emaList.forEach(function(e) {
       var ev = document.getElementById('ev' + e.id);
       if (ev && cData.length >= e.per) {
@@ -1145,12 +1093,9 @@ async function fetchChain() {
   var k = $('symSel') ? $('symSel').value : curIK;
   var ex = $('expSel').value;
   if (!k || !ex) { alert('Select symbol and expiry!'); return; }
-  // ── FIX #1 applied: reset stale OI state before fresh chain load ──
   prevCB = 0; prevPB = 0;
   prevSignal = null; signalCount = 0;
-  // Reset anti-repaint state
   pendingSignal = ''; pendingCount = 0; confirmedSignal = '';
-  // Reset reversal state
   prevNetCall = 0; prevNetPut = 0; prevPCR = 0;
   prevCU_rev = 0; prevPU_rev = 0;
   pcrRisingCount = 0; pcrFallingCount = 0;
@@ -1172,7 +1117,6 @@ function fmt(n) {
 
 var signalMarkers = [];
 
-// ── INDICATOR STATE ──
 var indState = {
   support:    { on: false, series: [], levels: [], color: 'rgba(0,220,130,0.7)',  lineStyle: 1, lineWidth: 1, label: 'S' },
   resistance: { on: false, series: [], levels: [], color: 'rgba(245,54,92,0.7)',  lineStyle: 1, lineWidth: 1, label: 'R' },
@@ -1180,7 +1124,6 @@ var indState = {
   maxoi:      { on: false, series: [],  value: 0,  color: 'rgba(168,85,247,0.8)', lineStyle: 2, lineWidth: 1, label: 'MaxOI' },
 };
 
-// Toggle indicator on/off from panel
 function toggleIndicator(name) {
   var ind = indState[name];
   if (!ind) return;
@@ -1210,10 +1153,8 @@ function drawIndicator(name) {
 
   var firstTime = cData[0].time;
   var lastTime  = cData[cData.length - 1].time;
-  // Extend line slightly beyond last candle (30min) so it looks like it continues
   var extTime = lastTime + 1800;
 
-  // LightweightCharts v4 lineStyle: 0=solid, 1=dotted, 2=dashed, 3=large-dashed, 4=sparse-dotted
   function makeLine(price, color, lineStyle, lineWidth, labelText) {
     var s = chart.addLineSeries({
       color: color,
@@ -1232,7 +1173,6 @@ function drawIndicator(name) {
 
   if (name === 'support') {
     ind.levels.forEach(function(lvl, i) {
-      // Darker for primary, lighter for secondary
       var alpha = i === 0 ? '0.85' : '0.45';
       var s = makeLine(lvl, 'rgba(0,220,130,' + alpha + ')', 2, 1, 'S' + (i + 1) + ':' + lvl.toFixed(0));
       ind.series.push(s);
@@ -1256,20 +1196,17 @@ function drawIndicator(name) {
   }
 }
 
-// Redraw all active indicators (called after candle data update)
 function redrawAllIndicators() {
   Object.keys(indState).forEach(function(name) {
     if (indState[name].on) drawIndicator(name);
   });
 }
 
-// Called from processChain — update indicator data and redraw if active
 function updateIndicatorData(supportLvls, resistanceLvls, maxPain, maxOIStrike) {
   indState.support.levels    = supportLvls    || [];
   indState.resistance.levels = resistanceLvls || [];
   indState.maxpain.value     = maxPain        || 0;
   indState.maxoi.value       = maxOIStrike    || 0;
-  // Redraw any that are currently on
   Object.keys(indState).forEach(function(name) {
     if (indState[name].on) drawIndicator(name);
   });
@@ -1288,85 +1225,80 @@ function addChartSignal(signal, price, time) {
   cSeries.setMarkers(signalMarkers.slice(-10));
 }
 
-// ── REVERSAL DETECTION ENGINE ──
-// 3 signals: CE Unwind spike, PCR direction change, Net Call shrinking
-function detectReversal(netCallWrite, netPutWrite, pcr, cU, pU, spot) {
-  var alert = '';
-  var strength = 0;
+// ── REVERSAL DETECTION ENGINE v2 — thresholds lowered ──
+var prevCBdelta = 0;
+var prevPBdelta = 0;
+var prevCUdelta = 0;
+var prevPUdelta = 0;
+var ceAccelCount = 0;
+var peAccelCount = 0;
+var ceDecelCount = 0;
+var peDecelCount = 0;
 
+function detectReversal(netCallWrite, netPutWrite, pcr, cU, pU, spot) {
   if (prevNetCall === 0) {
-    // First call — just store, don't signal
     prevNetCall = netCallWrite; prevNetPut = netPutWrite;
     prevPCR = pcr; prevCU_rev = cU; prevPU_rev = pU;
-    return '';
+    return null;
   }
 
-  var callUnwindChg = cU - prevCU_rev;   // How much CE unwind increased
-  var putUnwindChg  = pU - prevPU_rev;   // How much PE unwind increased
-  var netCallChg    = netCallWrite - prevNetCall; // Net call change (negative = retreating)
-  var netPutChg     = netPutWrite  - prevNetPut;
-  var pcrChg        = pcr - prevPCR;
+  var curCBdelta = Math.max(0, netCallWrite - prevNetCall);
+  var curPBdelta = Math.max(0, netPutWrite  - prevNetPut);
+  var curCUdelta = Math.max(0, cU - prevCU_rev);
+  var curPUdelta = Math.max(0, pU - prevPU_rev);
 
-  // Track PCR direction streaks
-  if (pcrChg > 0.005) {
-    pcrRisingCount++;  pcrFallingCount = 0;
-  } else if (pcrChg < -0.005) {
-    pcrFallingCount++; pcrRisingCount = 0;
+  var pcrChg = pcr - prevPCR;
+
+  var ceBuildRoC = prevCBdelta > 50000 ? curCBdelta / prevCBdelta : 1;
+  var peBuildRoC = prevPBdelta > 50000 ? curPBdelta / prevPBdelta : 1;
+  var ceUnwRoC   = prevCUdelta > 50000 ? curCUdelta / prevCUdelta : 1;
+
+  // Lowered thresholds: 1 instead of 2 for acceleration/deceleration
+  if (ceBuildRoC >= 1.5 && curCBdelta > 200000)  { ceAccelCount++; ceDecelCount = 0; }
+  else if (ceBuildRoC < 0.5 || curCBdelta < 50000) { ceDecelCount++; ceAccelCount = 0; }
+  else { ceAccelCount = 0; ceDecelCount = 0; }
+
+  if (peBuildRoC >= 1.5 && curPBdelta > 200000) { peAccelCount++; peDecelCount = 0; }
+  else if (peBuildRoC < 0.5 || curPBdelta < 50000) { peDecelCount++; peAccelCount = 0; }
+  else { peDecelCount = 0; peAccelCount = 0; }
+
+  if (pcrChg > 0.008)       { pcrRisingCount++;  pcrFallingCount = 0; }
+  else if (pcrChg < -0.008) { pcrFallingCount++; pcrRisingCount  = 0; }
+
+  var alert = null;
+  if (ceAccelCount >= 1 && netCallWrite > netPutWrite) {
+    var str = Math.min(3, ceAccelCount);
+    alert = { type: 'CE_ACCEL', label: '🔴 CE Build Accel', bullish: false, strength: str,
+              detail: 'CE Rate:' + ceBuildRoC.toFixed(1) + 'x | Delta:' + Math.round(curCBdelta/1000) + 'K' };
+  } else if (peAccelCount >= 1 && netPutWrite > netCallWrite) {
+    var str2 = Math.min(3, peAccelCount);
+    alert = { type: 'PE_ACCEL', label: '🟢 PE Build Accel', bullish: true, strength: str2,
+              detail: 'PE Rate:' + peBuildRoC.toFixed(1) + 'x | Delta:' + Math.round(curPBdelta/1000) + 'K' };
+  } else if (ceDecelCount >= 1 && prevNetCall > 2000000 && netPutWrite > 0) {
+    alert = { type: 'CE_DECEL', label: '⚡ CE Writers Pause', bullish: true, strength: 2,
+              detail: 'CE slowing | NetCE:' + Math.round(netCallWrite/1000) + 'K' };
+  } else if (peDecelCount >= 1 && prevNetPut > 2000000 && netCallWrite > 0) {
+    alert = { type: 'PE_DECEL', label: '⚡ PE Writers Pause', bullish: false, strength: 2,
+              detail: 'PE slowing | NetPE:' + Math.round(netPutWrite/1000) + 'K' };
+  } else if (pcrRisingCount >= 2 && prevPCR < 0.85 && !alert) {
+    alert = { type: 'PCR_TURN_UP', label: '📈 PCR Turns Up', bullish: true, strength: pcrRisingCount,
+              detail: 'PCR:' + prevPCR.toFixed(2) + '→' + pcr.toFixed(2) };
+  } else if (pcrFallingCount >= 2 && prevPCR > 1.15 && !alert) {
+    alert = { type: 'PCR_TURN_DN', label: '📉 PCR Turns Down', bullish: false, strength: pcrFallingCount,
+              detail: 'PCR:' + prevPCR.toFixed(2) + '→' + pcr.toFixed(2) };
   }
 
-  // ── Signal 1: CE UNWIND SPIKE ──
-  // Call writers rapidly covering = resistance breaking = price bounce coming
-  // Fire when: CE unwind increases by >500K in one refresh AND price is rising
-  if (callUnwindChg > 500000) {
-    alert = '⚡ CE SHORT COVER';
-    strength = Math.min(3, Math.floor(callUnwindChg / 500000));
-  }
-
-  // ── Signal 2: PE UNWIND SPIKE ──
-  // Put writers rapidly covering = support breaking = price fall coming
-  if (putUnwindChg > 500000 && !alert) {
-    alert = '⚡ PE SHORT COVER';
-    strength = Math.min(3, Math.floor(putUnwindChg / 500000));
-  }
-
-  // ── Signal 3: PCR TURNING UP from low ──
-  // PCR was oversold (<0.88), now rising 2+ ticks = puts being added = support
-  if (!alert && pcrRisingCount >= 2 && prevPCR < 0.90) {
-    alert = '📈 PCR REVERTING UP';
-    strength = pcrRisingCount;
-  }
-
-  // ── Signal 4: PCR TURNING DOWN from high ──
-  if (!alert && pcrFallingCount >= 2 && prevPCR > 1.15) {
-    alert = '📉 PCR REVERTING DOWN';
-    strength = pcrFallingCount;
-  }
-
-  // ── Signal 5: NET CALL RETREATING (call writers unwinding faster than building) ──
-  // netCallWrite drops >5% from prev = resistance weakening
-  if (!alert && prevNetCall > 1000000 && netCallChg < -(prevNetCall * 0.05)) {
-    alert = '🔄 CALL WRITERS EXIT';
-    strength = 1;
-  }
-
-  // ── Signal 6: NET PUT RETREATING ──
-  if (!alert && prevNetPut > 1000000 && netPutChg < -(prevNetPut * 0.05)) {
-    alert = '🔄 PUT WRITERS EXIT';
-    strength = 1;
-  }
-
-  // Update previous values
   prevNetCall = netCallWrite; prevNetPut = netPutWrite;
   prevPCR = pcr; prevCU_rev = cU; prevPU_rev = pU;
+  prevCBdelta = curCBdelta; prevPBdelta = curPBdelta;
+  prevCUdelta = curCUdelta; prevPUdelta = curPUdelta;
 
-  return alert ? { type: alert, strength: strength } : null;
+  return alert;
 }
 
-// Show/hide reversal alert bar
 function showReversalAlert(rev, spot) {
   var bar = $('revBar');
   if (!rev) {
-    // Fade out after 3 minutes of no alert
     return;
   }
 
@@ -1390,7 +1322,6 @@ function showReversalAlert(rev, spot) {
   bar.style.color = tcolor;
   bar.textContent = rev.type + '  ' + stars + '  |  ' + desc + '  @' + spot.toFixed(0);
 
-  // Log to signal history if new alert type
   if (rev.type !== prevReversalAlert) {
     prevReversalAlert = rev.type;
     var now = new Date();
@@ -1407,21 +1338,18 @@ function showReversalAlert(rev, spot) {
     saveSignalLog();
     renderSigLog();
 
-    // Chart marker for reversal
     if (cData.length) {
       addChartReversalMarker(rev.type, spot, cData[cData.length - 1].time, isBullRev);
     }
 
-    // ── BOT: Exit current trade + Enter reverse trade ──
     if (tradeRunning) {
       var ist = getISTNow();
       var marketOpen  = 9 * 60 + 15;
       var marketClose = 15 * 60 + 25;
       if (ist.total >= marketOpen && ist.total <= marketClose && spot > 0 && spot < 200000) {
 
-        var newDir = isBullRev ? 'BULL' : 'BEAR'; // direction after reversal
+        var newDir = isBullRev ? 'BULL' : 'BEAR';
 
-        // Step 1: Exit existing trade if it's opposite to reversal
         if (tradeEntry && tradeEntry.signal) {
           if (tradeEntry.signal !== newDir) {
             var pnl = tradeEntry.signal === 'BULL'
@@ -1432,13 +1360,11 @@ function showReversalAlert(rev, spot) {
               + ' | P&L: ' + pnlPct.toFixed(2) + '% | Reason: ' + rev.type);
             tradeEntry = {};
           } else {
-            // Trade already in correct direction — just log, no exit needed
             addTradeLog('⚡ ' + rev.type + ' @ ' + spot.toFixed(2) + ' | Trade OK — already ' + newDir);
             return;
           }
         }
 
-        // Step 2: Enter new trade in reversal direction
         var qty = parseInt($('tradeQty').value) || 1;
         tradeEntry = {
           signal: newDir,
@@ -1454,7 +1380,6 @@ function showReversalAlert(rev, spot) {
   }
 }
 
-// Add reversal marker on chart (different shape from signal markers)
 function addChartReversalMarker(type, price, time, isBull) {
   if (!cSeries || !time) return;
   var marker = {
@@ -1467,10 +1392,10 @@ function addChartReversalMarker(type, price, time, isBull) {
   signalMarkers.push(marker);
   cSeries.setMarkers(signalMarkers.slice(-20));
 }
+
 function calcSupportResistanceLevels(data, spot) {
   if (!data || !data.length) return { support: [], resistance: [] };
 
-  // Method 1: Max OI strikes = key S/R levels
   var maxCeOI = 0, maxPeOI = 0;
   var maxCeStrike = 0, maxPeStrike = 0;
   var secondCeOI = 0, secondPeOI = 0;
@@ -1490,8 +1415,6 @@ function calcSupportResistanceLevels(data, spot) {
     else if (peOI > secondPeOI) { secondPeOI = peOI; secondPeStrike = strike; }
   });
 
-  // Max Call OI strike = Resistance (call writers defending this level)
-  // Max Put OI strike  = Support    (put writers defending this level)
   var resistance = [];
   var support    = [];
 
@@ -1500,7 +1423,6 @@ function calcSupportResistanceLevels(data, spot) {
   if (maxPeStrike > 0) support.push(maxPeStrike);
   if (secondPeStrike > 0 && secondPeStrike !== maxPeStrike) support.push(secondPeStrike);
 
-  // Sort: resistance descending (highest first), support ascending (lowest first)
   resistance.sort(function(a, b) { return b - a; });
   support.sort(function(a, b)    { return a - b; });
 
@@ -1531,7 +1453,6 @@ function calcMaxPain(data, spot) {
 }
 
 function calcMaxOIStrike(data) {
-  // Strike with highest total OI (CE+PE combined) = magnet level
   if (!data || !data.length) return 0;
   var maxTotal = 0, maxStrike = 0;
   data.forEach(function(d) {
@@ -1543,6 +1464,9 @@ function calcMaxOIStrike(data) {
   return maxStrike;
 }
 
+// ═══════════════════════════════
+// UPDATED processChain – Reversal Override added
+// ═══════════════════════════════
 function processChain(data) {
   var cOI = 0, pOI = 0, cB = 0, pB = 0, cU = 0, pU = 0, spot = 0;
   var maxCeOI = 0, maxCeStrike = 0, maxPeOI = 0, maxPeStrike = 0;
@@ -1554,7 +1478,6 @@ function processChain(data) {
     cOI += ce.oi || 0;
     pOI += pe.oi || 0;
 
-    // Track max OI strikes (S/R)
     if ((ce.oi||0) > maxCeOI) { maxCeOI = ce.oi; maxCeStrike = d.strike_price; }
     if ((pe.oi||0) > maxPeOI) { maxPeOI = pe.oi; maxPeStrike = d.strike_price; }
 
@@ -1574,17 +1497,11 @@ function processChain(data) {
   var netPutWrite  = pB - pU;
   var totalWrite   = Math.abs(netCallWrite) + Math.abs(netPutWrite);
 
-  // ══════════════════════════════════════════════════
-  // DEMAT DIVE v4 STRATEGY — Live Signal Engine
-  // ══════════════════════════════════════════════════
-
-  // Read user config from panel
   var cfgBuild   = (parseFloat($('cfgBuild')  ? $('cfgBuild').value  : 500)  || 500)  * 1000;
   var cfgMinOI   = (parseFloat($('cfgMinOI')  ? $('cfgMinOI').value  : 10000)|| 10000)* 1000;
   var cfgUsePCR  = $('cfgUsePCR') ? $('cfgUsePCR').checked : true;
   var cfgUseCov  = $('cfgUseCov') ? $('cfgUseCov').checked : true;
 
-  // PCR Sentiment Zone
   var pcrSent;
   if      (pcrNum > 1.5) pcrSent = 'STRONG_BULL';
   else if (pcrNum > 1.2) pcrSent = 'MILD_BULL';
@@ -1592,7 +1509,6 @@ function processChain(data) {
   else if (pcrNum > 0.6) pcrSent = 'MILD_BEAR';
   else                   pcrSent = 'STRONG_BEAR';
 
-  // Price direction from last 3 candles
   var priceDir = 0;
   if (cData && cData.length >= 4) {
     var last  = cData[cData.length-1].close;
@@ -1601,23 +1517,18 @@ function processChain(data) {
     priceDir  = diff >= 2 ? 1 : diff <= -2 ? -1 : 0;
   }
 
-  // S/R proximity
   var nearSupport    = maxPeStrike > 0 && Math.abs(spot - maxPeStrike) < 150;
   var nearResistance = maxCeStrike > 0 && Math.abs(spot - maxCeStrike) < 150;
 
-  // ── SIGNAL DETECTION ──
   var sigType = '';
   var bull    = false;
   var isSideways = totalWrite < cfgMinOI;
   var isRevSignal = false;
 
   if (!isSideways) {
-    // 1. Short Covering: Price↑ + CE OI shrinking
     var ncShrink = prevNetCall > 500000 && netCallWrite < prevNetCall * 0.95;
-    // 2. Long Unwinding: Price↓ + PE OI shrinking
     var npShrink = prevNetPut  > 500000 && netPutWrite  < prevNetPut  * 0.95;
 
-    // PCR guard for reversals (EOD fake signals)
     var ist = getISTNow();
     var isAfter14 = ist.total > 840;
     var allowShortCover = cfgUseCov && !(cfgUsePCR && pcrSent === 'STRONG_BEAR' && isAfter14);
@@ -1628,7 +1539,6 @@ function processChain(data) {
     } else if (priceDir < 0 && npShrink && allowLongUnwind) {
       sigType = '⚡ Long Unwinding'; bull = false; isRevSignal = true;
     }
-    // Build-up signals
     else if (priceDir > 0 && netPutWrite > netCallWrite && netPutWrite > cfgBuild) {
       sigType = '📈 Long Build-up'; bull = true;
       if (cfgUsePCR && pcrSent === 'STRONG_BEAR') isSideways = true;
@@ -1636,7 +1546,6 @@ function processChain(data) {
       sigType = '📉 Short Build-up'; bull = false;
       if (cfgUsePCR && pcrSent === 'STRONG_BULL') isSideways = true;
     }
-    // Dominant writer signals (no clear price move)
     else if (netPutWrite > netCallWrite * 1.3 && netPutWrite > cfgBuild) {
       sigType = '🟢 Put Dominant'; bull = true;
       if (cfgUsePCR && pcrSent === 'STRONG_BEAR') isSideways = true;
@@ -1648,16 +1557,13 @@ function processChain(data) {
     }
   }
 
-  // Store prevNet for next refresh
   prevNetCall = netCallWrite; prevNetPut = netPutWrite;
   prevCB = cB; prevPB = pB;
 
-  // ── PCR COLOR ──
   var pcrColors = { STRONG_BULL:'var(--green)', MILD_BULL:'#00dc82',
                     NEUTRAL:'var(--yellow)', MILD_BEAR:'#ff9944', STRONG_BEAR:'var(--red)' };
   var pcrColor = pcrColors[pcrSent] || 'var(--t1)';
 
-  // ── DISPLAY ──
   $('cOI').textContent = fmt(cOI);
   $('pOI').textContent = fmt(pOI);
   $('cBld').textContent = (netCallWrite >= 0 ? '+' : '') + fmt(netCallWrite);
@@ -1665,6 +1571,21 @@ function processChain(data) {
   $('pcrV').textContent = pcrStr;
   if ($('pcrV')) $('pcrV').style.color = pcrColor;
   $('spotV').textContent = spot ? spot.toFixed(2) : '--';
+
+  // ── REVERSAL OVERRIDE (strength ≥ 2 takes priority) ──
+  var rev = detectReversal(netCallWrite, netPutWrite, pcrNum, cU, pU, spot);
+  showReversalAlert(rev, spot);
+
+  if (rev && rev.strength >= 2) {
+    isSideways = false;
+    if (rev.bullish) {
+      bull = true;
+      sigType = rev.label;
+    } else {
+      bull = false;
+      sigType = rev.label;
+    }
+  }
 
   var directionText = isSideways ? 'RANGE BOUND' : (bull ? 'BUY CE' : 'BUY PE');
   var barClass      = isSideways ? 'neu'          : (bull ? 'bull'   : 'bear');
@@ -1680,7 +1601,6 @@ function processChain(data) {
   $('mPcr').textContent    = pcrStr;
   $('mSpot').textContent   = spot ? spot.toFixed(2) : '--';
 
-  // Signal bar
   var srTag = (nearSupport ? ' | ✅ Near Support ' + maxPeStrike : '') +
               (nearResistance ? ' | 🔴 Near Resist ' + maxCeStrike : '');
   var pcrTag = ' | PCR:' + pcrStr + '(' + pcrSent.replace('_',' ') + ')';
@@ -1688,11 +1608,9 @@ function processChain(data) {
   sb.textContent = directionText + (isSideways ? ' — Low OI / Range' : ' — ' + sigType) + pcrTag + srTag;
   sb.className = 'sig-bar ' + barClass;
 
-  // ── ANTI-REPAINT SIGNAL PIPELINE ──
   var rawSig = isSideways ? 'SIDEWAYS' : (bull ? 'BULL' : 'BEAR');
   var newSig = rawSig;
 
-  // Track pending confirmation
   var tradeable = (newSig === 'BULL' || newSig === 'BEAR');
   if (tradeable && newSig === pendingSignal) {
     pendingCount++;
@@ -1703,14 +1621,11 @@ function processChain(data) {
     pendingSignal = ''; pendingCount = 0;
   }
 
-  // Confirm after CONFIRM_THRESHOLD refreshes
   if (pendingCount >= CONFIRM_THRESHOLD && pendingSignal !== confirmedSignal) {
     confirmedSignal = pendingSignal;
-    // Draw chart marker
     if (cData.length) addChartSignal(confirmedSignal, spot, cData[cData.length-1].time);
   }
 
-  // Log signal direction change
   if (rawSig !== lastSignal && rawSig !== 'SIDEWAYS') {
     var now = new Date();
     var timeStr = now.toLocaleString('en-IN', { timeZone:'Asia/Kolkata', hour12:false });
@@ -1726,17 +1641,11 @@ function processChain(data) {
     renderSigLog();
   }
 
-  // Update indicators from chain
   var srLevels = calcSupportResistanceLevels(data, spot);
   var maxPain  = calcMaxPain(data, spot);
   var maxOI    = calcMaxOIStrike(data);
   updateIndicatorData(srLevels.support, srLevels.resistance, maxPain, maxOI);
 
-  // Reversal detection
-  var rev = detectReversal(netCallWrite, netPutWrite, pcrNum, cU, pU, spot);
-  showReversalAlert(rev, spot);
-
-  // Bot trade signal — use confirmedSignal for stability
   var tradeSignal = (confirmedSignal === 'BULL' || confirmedSignal === 'BEAR') ? confirmedSignal : '';
   checkTradeSignal(tradeSignal, spot);
 
@@ -1792,7 +1701,6 @@ function updateActiveTrade(spot) {
   var pct    = tradeEntry.entry > 0 ? (pnl/tradeEntry.entry*100) : 0;
   var pnlColor = pnl >= 0 ? '#00ff88' : '#ff3366';
 
-  // Header color
   var hdr = $('activeTradeHdr');
   if (hdr) hdr.style.background = isBull ? 'linear-gradient(135deg,#064e3b,#065f46)' : 'linear-gradient(135deg,#7f1d1d,#991b1b)';
 
@@ -1805,7 +1713,6 @@ function updateActiveTrade(spot) {
   $('atPLrs').textContent  = '₹'+(pnlRs>=0?'+':'')+Math.round(pnlRs).toLocaleString('en-IN');
   $('atPLrs').style.color  = pnlColor;
 
-  // SL / TP levels
   var sl = parseFloat($('tradeSL').value)||0.5;
   var tp = parseFloat($('tradeTP').value)||1.5;
   var slPx = isBull ? tradeEntry.entry*(1-sl/100) : tradeEntry.entry*(1+sl/100);
@@ -1813,7 +1720,6 @@ function updateActiveTrade(spot) {
   $('atSLval').textContent = slPx.toFixed(2) + ' ✎';
   $('atTPval').textContent = tpPx.toFixed(2) + ' ✎';
 
-  // Trail SL
   if (trailSLEnabled && tradeEntry.entry > 0) {
     if (isBull) {
       trailSLPeak = Math.max(trailSLPeak, spot);
@@ -1885,23 +1791,21 @@ function toggleTrailSL() {
   addTradeLog('Trail SL: ' + (trailSLEnabled ? 'ON' : 'OFF'));
 }
 
-// Hook into addTradeLog to update session stats
 var _origAddTradeLog = null;
 function patchAddTradeLog() {
   if (typeof addTradeLog === 'function' && !_origAddTradeLog) {
     _origAddTradeLog = addTradeLog;
     addTradeLog = function(msg) {
       _origAddTradeLog(msg);
-      // Update session P&L from trade log messages
       var m = msg.match(/P&L:.*?₹([\+\-]?[\d,]+)/);
       if (m) { /* handled in manualClose/checkTradeSignal */ }
     };
   }
 }
 setTimeout(patchAddTradeLog, 500);
+
 function getISTNow() {
   var now = new Date();
-  // IST = UTC + 5:30
   var istMs = now.getTime() + (5.5 * 3600000);
   var ist = new Date(istMs);
   return { h: ist.getUTCHours(), m: ist.getUTCMinutes(), total: ist.getUTCHours() * 60 + ist.getUTCMinutes() };
@@ -1910,17 +1814,14 @@ function getISTNow() {
 function checkTradeSignal(signal, spot) {
   if (!tradeRunning) return;
 
-  // ── FIX 1: Valid signal check — only BULL or BEAR ──
   var validSignal = (signal === 'BULL' || signal === 'BEAR');
 
-  // ── FIX 2: Market hours filter — only 09:15 to 15:25 IST ──
   var ist = getISTNow();
-  var marketOpen  = 9 * 60 + 15;  // 09:15
-  var marketClose = 15 * 60 + 25; // 15:25
+  var marketOpen  = 9 * 60 + 15;
+  var marketClose = 15 * 60 + 25;
   var inMarket = (ist.total >= marketOpen && ist.total <= marketClose);
 
   if (!inMarket) {
-    // Close any open trade at market end
     if (tradeEntry && tradeEntry.signal && ist.total > marketClose) {
       var eodPnl = tradeEntry.signal === 'BULL' ? spot - tradeEntry.entry : tradeEntry.entry - spot;
       var eodPct = tradeEntry.entry > 0 ? (eodPnl / tradeEntry.entry * 100) : 0;
@@ -1930,16 +1831,14 @@ function checkTradeSignal(signal, spot) {
     return;
   }
 
-  // ── FIX 3: Spot price sanity check ──
   if (!spot || spot <= 0 || spot > 200000) return;
 
   var now = new Date();
   var timeStr = now.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', hour12: false });
   var nowMs = now.getTime();
 
-  // ── FIX 4: Open new trade only on valid signal ──
   if (!tradeEntry || !tradeEntry.signal) {
-    if (!validSignal) return; // No valid signal = no entry
+    if (!validSignal) return;
     tradeEntry = {
       time: timeStr,
       signal: signal,
@@ -1951,17 +1850,14 @@ function checkTradeSignal(signal, spot) {
     return;
   }
 
-  // ── FIX 5: Minimum hold time — 60 seconds before exit ──
   var heldMs = nowMs - (tradeEntry.entryMs || nowMs);
-  var minHoldMs = 60000; // 1 minute minimum
-  if (heldMs < minHoldMs) return; // Too early to exit
+  var minHoldMs = 60000;
+  if (heldMs < minHoldMs) return;
 
-  // ── Check for reversal exit (signal flipped) ──
   if (validSignal && signal !== tradeEntry.signal) {
     var revPnl = tradeEntry.signal === 'BULL' ? spot - tradeEntry.entry : tradeEntry.entry - spot;
     var revPct = (revPnl / tradeEntry.entry) * 100;
     addTradeLog('Rev Exit @ ' + spot.toFixed(2) + ' | P&L: ' + revPct.toFixed(2) + '%');
-    // Immediately open reverse trade
     tradeEntry = {
       time: timeStr,
       signal: signal,
@@ -1973,7 +1869,6 @@ function checkTradeSignal(signal, spot) {
     return;
   }
 
-  // ── SL / TP check ──
   if (tradeEntry && tradeEntry.signal) {
     var pnl = tradeEntry.signal === 'BULL' ? spot - tradeEntry.entry : tradeEntry.entry - spot;
     var pnlPct = (pnl / tradeEntry.entry) * 100;
@@ -2019,7 +1914,6 @@ function toggleTradeBot() {
     $('tradeStatus').textContent = 'Running (' + tradeMode + ')' + (inMkt ? ' 🟢 Market Open' : ' 🔴 Market Closed');
     $('tradeStatus').className = 'trade-status running';
     addTradeLog('Bot started [' + tradeMode + '] | Market: ' + (inMkt ? 'OPEN' : 'CLOSED — waiting 09:15'));
-    // Update status every minute
     if (window._botStatusTimer) clearInterval(window._botStatusTimer);
     window._botStatusTimer = setInterval(function() {
       if (!tradeRunning) { clearInterval(window._botStatusTimer); return; }
@@ -2247,7 +2141,6 @@ function toggleAuto() {
 
 function startAuto() {
   if (refreshTimer) clearInterval(refreshTimer);
-  // 5 second refresh for live candle — intraday API is lightweight
   refreshTimer = setInterval(function() {
     if (curIK && tok) liveUpdate();
   }, 5000);
@@ -2325,8 +2218,6 @@ document.addEventListener('click', function(e) {
 function fmtIST(unixSec) {
   if (!unixSec) return '--';
   try {
-    // Timestamps stored as "fake UTC" = IST wall clock treated as UTC
-    // So just read UTC fields directly — they show IST time correctly
     var d = new Date(unixSec * 1000);
     var dd = String(d.getUTCDate()).padStart(2, '0');
     var mo = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getUTCMonth()];
