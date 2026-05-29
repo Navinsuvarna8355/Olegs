@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -230,12 +231,12 @@ html,body{background:var(--bg);color:var(--t1);font-family:'Segoe UI',sans-serif
     </div>
 
     <div class="chart-card">
-<div class="chart-top">
-  <div class="chart-sym">
-    <span id="symLbl">NIFTY 50</span>
-    <span id="barInfo"></span>
-  </div>
-  <button onclick="toggleMinimize('chart-card')" style="background:none;border:1px solid var(--border);color:var(--t2);padding:3px 8px;border-radius:3px;cursor:pointer;font-size:11px;" id="minChartBtn">−</button>
+      <div class="chart-top">
+        <div class="chart-sym">
+          <span id="symLbl">NIFTY 50</span>
+          <span id="barInfo"></span>
+        </div>
+        <button onclick="toggleMinimize('chart-card')" style="background:none;border:1px solid var(--border);color:var(--t2);padding:3px 8px;border-radius:3px;cursor:pointer;font-size:11px;" id="minChartBtn">−</button>
         <div class="tf-row" style="position:relative;">
           <button class="tf-btn" onclick="setTF('1minute')" id="tf-1minute">1m</button>
           <button class="tf-btn" onclick="setTF('5minute')" id="tf-5minute">5m</button>
@@ -313,7 +314,6 @@ html,body{background:var(--bg);color:var(--t1);font-family:'Segoe UI',sans-serif
       <select id="expSel"><option value="">-- Expiry --</option></select>
       <button class="btn-load" onclick="fetchChain()">Load Chain</button>
 
-      <!-- CONFIG INPUTS -->
       <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:4px;">
         <label style="font-size:10px; color:var(--t2);">Min Build (K)</label>
         <input type="number" id="cfgBuild" value="500" min="100" step="100" style="width:70px; background:var(--bg); border:1px solid var(--border); color:var(--t1); padding:4px; border-radius:3px; font-size:11px;">
@@ -329,7 +329,7 @@ html,body{background:var(--bg);color:var(--t1);font-family:'Segoe UI',sans-serif
     </div>
 
     <script>
-    // FULL F&O + INDEX SYMBOL LIST
+    // ── FULL F&O + INDEX SYMBOL LIST ──
     var SYM_LIST = [
       {g:'Index', v:'NSE_INDEX|Nifty 50',         n:'NIFTY 50'},
       {g:'Index', v:'NSE_INDEX|Nifty Bank',        n:'BANKNIFTY'},
@@ -1247,7 +1247,6 @@ var ceDecelCount = 0;
 var peDecelCount = 0;
 
 function detectReversal(netCallWrite, netPutWrite, pcr, cU, pU, spot) {
-  // Get configurable min OI threshold from UI
   var cfgMinOI = (parseFloat($('cfgMinOI') ? $('cfgMinOI').value : 1000) || 1000) * 1000;
 
   if (prevNetCall === 0) {
@@ -1263,16 +1262,14 @@ function detectReversal(netCallWrite, netPutWrite, pcr, cU, pU, spot) {
 
   var pcrChg = pcr - prevPCR;
 
-  // Dynamic thresholds based on total OI
   var totalOI = Math.abs(netCallWrite) + Math.abs(netPutWrite);
-  var minDeltaForSignal = Math.max(100000, cfgMinOI * 0.2); // At least 20% of min OI config
+  var minDeltaForSignal = Math.max(100000, cfgMinOI * 0.2);
 
   var ceBuildRoC = prevCBdelta > minDeltaForSignal ? curCBdelta / prevCBdelta : 1;
   var peBuildRoC = prevPBdelta > minDeltaForSignal ? curPBdelta / prevPBdelta : 1;
   var ceUnwRoC   = prevCUdelta > minDeltaForSignal ? curCUdelta / prevCUdelta : 1;
   var peUnwRoC   = prevPUdelta > minDeltaForSignal ? curPUdelta / prevPUdelta : 1;
 
-  // Price trend check (last 3 candles)
   var priceTrend = 0;
   if (cData && cData.length >= 4) {
     var p0 = cData[cData.length-1].close;
@@ -1280,7 +1277,6 @@ function detectReversal(netCallWrite, netPutWrite, pcr, cU, pU, spot) {
     priceTrend = p0 - p3;
   }
 
-  // Acceleration / deceleration detection with dynamic thresholds
   if (ceBuildRoC >= 1.5 && curCBdelta > minDeltaForSignal)  { ceAccelCount++; ceDecelCount = 0; }
   else if (ceBuildRoC < 0.5 || curCBdelta < minDeltaForSignal * 0.5) { ceDecelCount++; ceAccelCount = 0; }
   else { ceAccelCount = 0; ceDecelCount = 0; }
@@ -1295,44 +1291,36 @@ function detectReversal(netCallWrite, netPutWrite, pcr, cU, pU, spot) {
 
   var alert = null;
 
-  // CE acceleration = bearish signal (call writers getting aggressive)
   if (ceAccelCount >= 1 && netCallWrite > netPutWrite && totalOI > cfgMinOI) {
     var str = Math.min(3, ceAccelCount);
     alert = { type: 'CE_ACCEL', label: '🔴 CE Build Accel', bullish: false, strength: str,
               detail: 'CE Rate:' + ceBuildRoC.toFixed(1) + 'x | Delta:' + Math.round(curCBdelta/1000) + 'K' };
   }
-  // PE acceleration = bullish signal (put writers getting aggressive)
   else if (peAccelCount >= 1 && netPutWrite > netCallWrite && totalOI > cfgMinOI) {
     var str2 = Math.min(3, peAccelCount);
     alert = { type: 'PE_ACCEL', label: '🟢 PE Build Accel', bullish: true, strength: str2,
               detail: 'PE Rate:' + peBuildRoC.toFixed(1) + 'x | Delta:' + Math.round(curPBdelta/1000) + 'K' };
   }
-  // CE deceleration with price rising = potential bullish reversal
   else if (ceDecelCount >= 1 && prevNetCall > cfgMinOI && priceTrend > 10 && !alert) {
     alert = { type: 'CE_DECEL', label: '⚡ CE Writers Pause', bullish: true, strength: 2,
               detail: 'CE slowing | NetCE:' + Math.round(netCallWrite/1000) + 'K | Price↑' };
   }
-  // PE deceleration with price falling = potential bearish reversal
   else if (peDecelCount >= 1 && prevNetPut > cfgMinOI && priceTrend < -10 && !alert) {
     alert = { type: 'PE_DECEL', label: '⚡ PE Writers Pause', bullish: false, strength: 2,
               detail: 'PE slowing | NetPE:' + Math.round(netPutWrite/1000) + 'K | Price↓' };
   }
-  // PCR turning up from low = bullish
   else if (pcrRisingCount >= 2 && prevPCR < 0.85 && !alert) {
     alert = { type: 'PCR_TURN_UP', label: '📈 PCR Turns Up', bullish: true, strength: pcrRisingCount,
               detail: 'PCR:' + prevPCR.toFixed(2) + '→' + pcr.toFixed(2) };
   }
-  // PCR turning down from high = bearish
   else if (pcrFallingCount >= 2 && prevPCR > 1.15 && !alert) {
     alert = { type: 'PCR_TURN_DN', label: '📉 PCR Turns Down', bullish: false, strength: pcrFallingCount,
               detail: 'PCR:' + prevPCR.toFixed(2) + '→' + pcr.toFixed(2) };
   }
-  // CE unwinding acceleration + price rising = bullish reversal
   else if (ceUnwRoC >= 2.0 && curCUdelta > minDeltaForSignal && priceTrend > 15 && !alert) {
     alert = { type: 'CE_UNWIND_ACCEL', label: '🔄 CE Unwind Surge', bullish: true, strength: 2,
               detail: 'CE Unwind:' + Math.round(curCUdelta/1000) + 'K | Price↑' };
   }
-  // PE unwinding acceleration + price falling = bearish reversal
   else if (peUnwRoC >= 2.0 && curPUdelta > minDeltaForSignal && priceTrend < -15 && !alert) {
     alert = { type: 'PE_UNWIND_ACCEL', label: '🔄 PE Unwind Surge', bullish: false, strength: 2,
               detail: 'PE Unwind:' + Math.round(curPUdelta/1000) + 'K | Price↓' };
@@ -1348,9 +1336,7 @@ function detectReversal(netCallWrite, netPutWrite, pcr, cU, pU, spot) {
 
 function showReversalAlert(rev, spot) {
   var bar = $('revBar');
-  if (!rev) {
-    return;
-  }
+  if (!rev) return;
 
   var isBullRev  = rev.bullish === true;
   var isBearRev  = rev.bullish === false;
@@ -1358,12 +1344,7 @@ function showReversalAlert(rev, spot) {
   var stars = '★'.repeat(rev.strength) + '☆'.repeat(Math.max(0, 3 - rev.strength));
   var color  = isBullRev ? 'rgba(0,220,130,0.15)' : 'rgba(245,54,92,0.15)';
   var tcolor = isBullRev ? 'var(--green)' : 'var(--red)';
-  var botAction = tradeRunning
-    ? (isBullRev ? ' | 🤖 AUTO: Exit PE → Enter CE' : ' | 🤖 AUTO: Exit CE → Enter PE')
-    : (isBullRev ? ' | Manual: Exit PE → BUY CE' : ' | Manual: Exit CE → BUY PE');
-  var desc = isBullRev
-    ? 'BOUNCE ↑ — ' + rev.detail + botAction
-    : 'DROP ↓ — ' + rev.detail + botAction;
+  var desc = isBullRev ? 'BOUNCE ↑ — ' + rev.detail : 'DROP ↓ — ' + rev.detail;
 
   bar.style.display = 'block';
   bar.style.background = color;
@@ -1395,34 +1376,19 @@ function showReversalAlert(rev, spot) {
       var marketOpen  = 9 * 60 + 15;
       var marketClose = 15 * 60 + 25;
       if (ist.total >= marketOpen && ist.total <= marketClose && spot > 0 && spot < 200000) {
-
         var newDir = isBullRev ? 'BULL' : 'BEAR';
-
         if (tradeEntry && tradeEntry.signal) {
           if (tradeEntry.signal !== newDir) {
-            var pnl = tradeEntry.signal === 'BULL'
-              ? spot - tradeEntry.entry
-              : tradeEntry.entry - spot;
+            var pnl = tradeEntry.signal === 'BULL' ? spot - tradeEntry.entry : tradeEntry.entry - spot;
             var pnlPct = (pnl / tradeEntry.entry) * 100;
-            addTradeLog('⚡ EXIT(' + tradeEntry.signal + ') @ ' + spot.toFixed(2)
-              + ' | P&L: ' + pnlPct.toFixed(2) + '% | Reason: ' + rev.type);
+            addTradeLog('⚡ EXIT(' + tradeEntry.signal + ') @ ' + spot.toFixed(2) + ' | P&L: ' + pnlPct.toFixed(2) + '% | Reason: ' + rev.type);
             tradeEntry = {};
-          } else {
-            addTradeLog('⚡ ' + rev.type + ' @ ' + spot.toFixed(2) + ' | Trade OK — already ' + newDir);
-            return;
           }
+        } else {
+          var qty = parseInt($('tradeQty').value) || 1;
+          tradeEntry = { signal: newDir, entry: spot, qty: qty, entryMs: Date.now() };
+          addTradeLog('⚡ NEW ENTRY(' + (newDir === 'BULL' ? 'BUY CE' : 'BUY PE') + ') @ ' + spot.toFixed(2) + ' | ' + rev.type);
         }
-
-        var qty = parseInt($('tradeQty').value) || 1;
-        tradeEntry = {
-          signal: newDir,
-          entry:  spot,
-          qty:    qty,
-          entryMs: Date.now()
-        };
-        var dirLabel = newDir === 'BULL' ? 'BUY CE' : 'BUY PE';
-        addTradeLog('⚡ NEW ENTRY(' + dirLabel + ') @ ' + spot.toFixed(2)
-          + ' | ' + rev.type);
       }
     }
   }
@@ -1443,37 +1409,24 @@ function addChartReversalMarker(type, price, time, isBull) {
 
 function calcSupportResistanceLevels(data, spot) {
   if (!data || !data.length) return { support: [], resistance: [] };
-
-  var maxCeOI = 0, maxPeOI = 0;
-  var maxCeStrike = 0, maxPeStrike = 0;
-  var secondCeOI = 0, secondPeOI = 0;
-  var secondCeStrike = 0, secondPeStrike = 0;
-
+  var maxCeOI = 0, maxPeOI = 0, maxCeStrike = 0, maxPeStrike = 0;
+  var secondCeOI = 0, secondPeOI = 0, secondCeStrike = 0, secondPeStrike = 0;
   data.forEach(function(d) {
     var ce = (d.call_options && d.call_options.market_data) || {};
     var pe = (d.put_options && d.put_options.market_data) || {};
-    var ceOI = ce.oi || 0;
-    var peOI = pe.oi || 0;
-    var strike = d.strike_price;
-
+    var ceOI = ce.oi || 0, peOI = pe.oi || 0, strike = d.strike_price;
     if (ceOI > maxCeOI) { secondCeOI = maxCeOI; secondCeStrike = maxCeStrike; maxCeOI = ceOI; maxCeStrike = strike; }
     else if (ceOI > secondCeOI) { secondCeOI = ceOI; secondCeStrike = strike; }
-
     if (peOI > maxPeOI) { secondPeOI = maxPeOI; secondPeStrike = maxPeStrike; maxPeOI = peOI; maxPeStrike = strike; }
     else if (peOI > secondPeOI) { secondPeOI = peOI; secondPeStrike = strike; }
   });
-
-  var resistance = [];
-  var support    = [];
-
+  var resistance = [], support = [];
   if (maxCeStrike > 0) resistance.push(maxCeStrike);
   if (secondCeStrike > 0 && secondCeStrike !== maxCeStrike) resistance.push(secondCeStrike);
   if (maxPeStrike > 0) support.push(maxPeStrike);
   if (secondPeStrike > 0 && secondPeStrike !== maxPeStrike) support.push(secondPeStrike);
-
   resistance.sort(function(a, b) { return b - a; });
   support.sort(function(a, b)    { return a - b; });
-
   return { support: support, resistance: resistance };
 }
 
@@ -1518,17 +1471,14 @@ function calcMaxOIStrike(data) {
 function processChain(data) {
   var cOI = 0, pOI = 0, cB = 0, pB = 0, cU = 0, pU = 0, spot = 0;
   var maxCeOI = 0, maxCeStrike = 0, maxPeOI = 0, maxPeStrike = 0;
-
   data.forEach(function(d) {
     if (!spot) spot = d.underlying_spot_price;
     var ce = (d.call_options && d.call_options.market_data) || {};
     var pe = (d.put_options && d.put_options.market_data) || {};
     cOI += ce.oi || 0;
     pOI += pe.oi || 0;
-
     if ((ce.oi||0) > maxCeOI) { maxCeOI = ce.oi; maxCeStrike = d.strike_price; }
     if ((pe.oi||0) > maxPeOI) { maxPeOI = pe.oi; maxPeStrike = d.strike_price; }
-
     var ceDiff = (ce.oi||0) - (ce.prev_oi||0);
     var peDiff = (pe.oi||0) - (pe.prev_oi||0);
     if (ce.prev_oi === 0 && ce.oi > 0) ceDiff = ce.oi;
@@ -1545,13 +1495,11 @@ function processChain(data) {
   var netPutWrite  = pB - pU;
   var totalWrite   = Math.abs(netCallWrite) + Math.abs(netPutWrite);
 
-  // Read configurable thresholds from UI inputs
   var cfgBuild   = (parseFloat($('cfgBuild') ? $('cfgBuild').value : 500) || 500) * 1000;
   var cfgMinOI   = (parseFloat($('cfgMinOI') ? $('cfgMinOI').value : 1000) || 1000) * 1000;
   var cfgUsePCR  = $('cfgUsePCR') ? $('cfgUsePCR').checked : true;
   var cfgUseCov  = $('cfgUseCov') ? $('cfgUseCov').checked : true;
 
-  // PCR sentiment classification
   var pcrSent;
   if      (pcrNum > 1.5) pcrSent = 'STRONG_BULL';
   else if (pcrNum > 1.2) pcrSent = 'MILD_BULL';
@@ -1559,21 +1507,14 @@ function processChain(data) {
   else if (pcrNum > 0.6) pcrSent = 'MILD_BEAR';
   else                   pcrSent = 'STRONG_BEAR';
 
-  // Price trend detection (last 4 candles for short-term, 12 for medium-term)
-  var priceDirShort = 0;
-  var priceDirMedium = 0;
+  var priceDirShort = 0, priceDirMedium = 0;
   if (cData && cData.length >= 4) {
-    var lastClose  = cData[cData.length-1].close;
-    var prev3Close = cData[cData.length-4].close;
-    priceDirShort  = lastClose - prev3Close;
+    priceDirShort  = cData[cData.length-1].close - cData[cData.length-4].close;
   }
   if (cData && cData.length >= 12) {
-    var lastClose2   = cData[cData.length-1].close;
-    var prev11Close  = cData[cData.length-12].close;
-    priceDirMedium   = lastClose2 - prev11Close;
+    priceDirMedium = cData[cData.length-1].close - cData[cData.length-12].close;
   }
 
-  // Near key levels check
   var nearSupport    = maxPeStrike > 0 && Math.abs(spot - maxPeStrike) < 150;
   var nearResistance = maxCeStrike > 0 && Math.abs(spot - maxCeStrike) < 150;
 
@@ -1581,78 +1522,49 @@ function processChain(data) {
   var bull    = false;
   var isSideways = totalWrite < cfgMinOI;
   var isRevSignal = false;
-  var trendScore = 0; // Cumulative score: positive = bullish, negative = bearish
+  var trendScore = 0;
 
   if (!isSideways) {
     var ncShrink = prevNetCall > cfgMinOI && netCallWrite < prevNetCall * 0.95;
     var npShrink = prevNetPut  > cfgMinOI && netPutWrite  < prevNetPut  * 0.95;
-
     var ist = getISTNow();
-    var isAfter14 = ist.total > 840; // After 2 PM
+    var isAfter14 = ist.total > 840;
     var allowShortCover = cfgUseCov && !(cfgUsePCR && pcrSent === 'STRONG_BEAR' && isAfter14);
     var allowLongUnwind = cfgUseCov && !(cfgUsePCR && pcrSent === 'STRONG_BULL' && isAfter14);
 
-    // Trend score accumulation
     if (priceDirShort > 10) trendScore += 2;
     else if (priceDirShort > 5) trendScore += 1;
     else if (priceDirShort < -10) trendScore -= 2;
     else if (priceDirShort < -5) trendScore -= 1;
-
     if (priceDirMedium > 30) trendScore += 3;
     else if (priceDirMedium < -30) trendScore -= 3;
-
     if (netPutWrite > netCallWrite * 1.2) trendScore += 2;
     if (netCallWrite > netPutWrite * 1.2) trendScore -= 2;
-
     if (pcrSent === 'STRONG_BULL') trendScore += 1;
     else if (pcrSent === 'STRONG_BEAR') trendScore -= 1;
-
     if (nearSupport) trendScore += 1;
     if (nearResistance) trendScore -= 1;
 
-    // Short covering detection (CE OI dropping + price rising)
     if (priceDirShort > 5 && ncShrink && allowShortCover) {
-      sigType = '⚡ Short Covering'; bull = true; isRevSignal = true;
-      trendScore += 3;
-    }
-    // Long unwinding detection (PE OI dropping + price falling)
-    else if (priceDirShort < -5 && npShrink && allowLongUnwind) {
-      sigType = '⚡ Long Unwinding'; bull = false; isRevSignal = true;
-      trendScore -= 3;
-    }
-    // Long build-up (PE OI rising + price rising)
-    else if (priceDirShort > 0 && netPutWrite > netCallWrite && netPutWrite > cfgBuild) {
-      sigType = '📈 Long Build-up'; bull = true;
-      trendScore += 2;
+      sigType = '⚡ Short Covering'; bull = true; isRevSignal = true; trendScore += 3;
+    } else if (priceDirShort < -5 && npShrink && allowLongUnwind) {
+      sigType = '⚡ Long Unwinding'; bull = false; isRevSignal = true; trendScore -= 3;
+    } else if (priceDirShort > 0 && netPutWrite > netCallWrite && netPutWrite > cfgBuild) {
+      sigType = '📈 Long Build-up'; bull = true; trendScore += 2;
       if (cfgUsePCR && pcrSent === 'STRONG_BEAR') isSideways = true;
-    }
-    // Short build-up (CE OI rising + price falling)
-    else if (priceDirShort < 0 && netCallWrite > netPutWrite && netCallWrite > cfgBuild) {
-      sigType = '📉 Short Build-up'; bull = false;
-      trendScore -= 2;
+    } else if (priceDirShort < 0 && netCallWrite > netPutWrite && netCallWrite > cfgBuild) {
+      sigType = '📉 Short Build-up'; bull = false; trendScore -= 2;
       if (cfgUsePCR && pcrSent === 'STRONG_BULL') isSideways = true;
-    }
-    // Put dominant (OI concentration in puts)
-    else if (netPutWrite > netCallWrite * 1.3 && netPutWrite > cfgBuild) {
-      sigType = '🟢 Put Dominant'; bull = true;
-      trendScore += 1;
+    } else if (netPutWrite > netCallWrite * 1.3 && netPutWrite > cfgBuild) {
+      sigType = '🟢 Put Dominant'; bull = true; trendScore += 1;
       if (cfgUsePCR && pcrSent === 'STRONG_BEAR') isSideways = true;
-    }
-    // Call dominant (OI concentration in calls)
-    else if (netCallWrite > netPutWrite * 1.3 && netCallWrite > cfgBuild) {
-      sigType = '🔴 Call Dominant'; bull = false;
-      trendScore -= 1;
+    } else if (netCallWrite > netPutWrite * 1.3 && netCallWrite > cfgBuild) {
+      sigType = '🔴 Call Dominant'; bull = false; trendScore -= 1;
       if (cfgUsePCR && pcrSent === 'STRONG_BULL') isSideways = true;
-    }
-    // Use trend score for borderline cases
-    else if (Math.abs(trendScore) >= 3 && totalWrite > cfgMinOI * 0.7) {
-      if (trendScore > 0) {
-        sigType = '📊 Trend Bias Bull'; bull = true;
-      } else {
-        sigType = '📊 Trend Bias Bear'; bull = false;
-      }
-    }
-    else {
+    } else if (Math.abs(trendScore) >= 3 && totalWrite > cfgMinOI * 0.7) {
+      if (trendScore > 0) { sigType = '📊 Trend Bias Bull'; bull = true; }
+      else { sigType = '📊 Trend Bias Bear'; bull = false; }
+    } else {
       isSideways = true;
     }
   }
@@ -1672,19 +1584,13 @@ function processChain(data) {
   if ($('pcrV')) $('pcrV').style.color = pcrColor;
   $('spotV').textContent = spot ? spot.toFixed(2) : '--';
 
-  // REVERSAL OVERRIDE (strength ≥ 2 takes priority over normal signal)
   var rev = detectReversal(netCallWrite, netPutWrite, pcrNum, cU, pU, spot);
   showReversalAlert(rev, spot);
 
   if (rev && rev.strength >= 2) {
     isSideways = false;
-    if (rev.bullish) {
-      bull = true;
-      sigType = rev.label;
-    } else {
-      bull = false;
-      sigType = rev.label;
-    }
+    if (rev.bullish) { bull = true; sigType = rev.label; }
+    else { bull = false; sigType = rev.label; }
   }
 
   var directionText = isSideways ? 'RANGE BOUND' : (bull ? 'BUY CE' : 'BUY PE');
@@ -1711,23 +1617,16 @@ function processChain(data) {
   var rawSig = isSideways ? 'SIDEWAYS' : (bull ? 'BULL' : 'BEAR');
   var newSig = rawSig;
 
-  // Signal confirmation logic
   var tradeable = (newSig === 'BULL' || newSig === 'BEAR');
-  if (tradeable && newSig === pendingSignal) {
-    pendingCount++;
-  } else if (tradeable) {
-    pendingSignal = newSig;
-    pendingCount  = 1;
-  } else {
-    pendingSignal = ''; pendingCount = 0;
-  }
+  if (tradeable && newSig === pendingSignal) { pendingCount++; }
+  else if (tradeable) { pendingSignal = newSig; pendingCount = 1; }
+  else { pendingSignal = ''; pendingCount = 0; }
 
   if (pendingCount >= CONFIRM_THRESHOLD && pendingSignal !== confirmedSignal) {
     confirmedSignal = pendingSignal;
     if (cData.length) addChartSignal(confirmedSignal, spot, cData[cData.length-1].time);
   }
 
-  // Signal logging
   if (rawSig !== lastSignal && rawSig !== 'SIDEWAYS') {
     var now = new Date();
     var timeStr = now.toLocaleString('en-IN', { timeZone:'Asia/Kolkata', hour12:false });
@@ -1743,17 +1642,14 @@ function processChain(data) {
     renderSigLog();
   }
 
-  // Update support/resistance indicators
   var srLevels = calcSupportResistanceLevels(data, spot);
   var maxPain  = calcMaxPain(data, spot);
   var maxOI    = calcMaxOIStrike(data);
   updateIndicatorData(srLevels.support, srLevels.resistance, maxPain, maxOI);
 
-  // Trade signal check
   var tradeSignal = (confirmedSignal === 'BULL' || confirmedSignal === 'BEAR') ? confirmedSignal : '';
   checkTradeSignal(tradeSignal, spot);
 
-  // OPTION CHAIN TABLE RENDER
   var atm  = Math.round(spot / 50) * 50;
   var body = $('chainBody');
   var html = '';
@@ -1783,7 +1679,7 @@ function processChain(data) {
 }
 
 // ══════════════════════════════════════════
-// BROKER UI FUNCTIONS (unchanged)
+// BROKER UI FUNCTIONS
 // ══════════════════════════════════════════
 var trailSLEnabled = false;
 var trailSLPeak    = 0;
@@ -1805,7 +1701,6 @@ function updateActiveTrade(spot) {
   var isBull = tradeEntry.signal === 'BULL';
   var pnl    = isBull ? spot - tradeEntry.entry : tradeEntry.entry - spot;
   var pnlRs  = pnl * 65 * (parseInt($('tradeQty').value)||1);
-  var pct    = tradeEntry.entry > 0 ? (pnl/tradeEntry.entry*100) : 0;
   var pnlColor = pnl >= 0 ? '#00ff88' : '#ff3366';
 
   var hdr = $('activeTradeHdr');
@@ -1831,16 +1726,12 @@ function updateActiveTrade(spot) {
     if (isBull) {
       trailSLPeak = Math.max(trailSLPeak, spot);
       var newSL = trailSLPeak * (1 - sl/100);
-      if (spot <= newSL) {
-        manualClose(); return;
-      }
+      if (spot <= newSL) { manualClose(); return; }
       $('atTrailval').textContent = newSL.toFixed(2);
     } else {
       trailSLPeak = trailSLPeak === 0 ? spot : Math.min(trailSLPeak, spot);
       var newSL2 = trailSLPeak * (1 + sl/100);
-      if (spot >= newSL2) {
-        manualClose(); return;
-      }
+      if (spot >= newSL2) { manualClose(); return; }
       $('atTrailval').textContent = newSL2.toFixed(2);
     }
   }
@@ -1856,15 +1747,12 @@ function updateSessionStats() {
   $('sessionWR').textContent     = sessionTradeCount ? Math.round(sessionWins/sessionTradeCount*100)+'%' : '0%';
 }
 
-function renderClosedTrades() {
-  // Placeholder - closed trades are tracked in session stats
-}
+function renderClosedTrades() {}
 
 function manualClose() {
   if (!tradeEntry || !tradeEntry.signal) return;
   var spot = parseFloat($('mSpot').textContent) || tradeEntry.entry;
   var pnl  = tradeEntry.signal === 'BULL' ? spot - tradeEntry.entry : tradeEntry.entry - spot;
-  var pct  = (pnl / tradeEntry.entry * 100).toFixed(2);
   var pnlRs = pnl * 65 * (parseInt($('tradeQty').value)||1);
   sessionPLtotal += pnlRs;
   sessionTradeCount++;
@@ -1879,19 +1767,13 @@ function manualClose() {
 function editSL() {
   var cur = parseFloat($('tradeSL').value)||0.5;
   var val = prompt('New SL % (current: '+cur+'%)', cur);
-  if (val && !isNaN(parseFloat(val))) {
-    $('tradeSL').value = parseFloat(val);
-    addTradeLog('SL changed to ' + parseFloat(val) + '%');
-  }
+  if (val && !isNaN(parseFloat(val))) { $('tradeSL').value = parseFloat(val); addTradeLog('SL changed to ' + parseFloat(val) + '%'); }
 }
 
 function editTP() {
   var cur = parseFloat($('tradeTP').value)||1.5;
   var val = prompt('New TP % (current: '+cur+'%)', cur);
-  if (val && !isNaN(parseFloat(val))) {
-    $('tradeTP').value = parseFloat(val);
-    addTradeLog('TP changed to ' + parseFloat(val) + '%');
-  }
+  if (val && !isNaN(parseFloat(val))) { $('tradeTP').value = parseFloat(val); addTradeLog('TP changed to ' + parseFloat(val) + '%'); }
 }
 
 function toggleTrailSL() {
@@ -1902,19 +1784,6 @@ function toggleTrailSL() {
   addTradeLog('Trail SL: ' + (trailSLEnabled ? 'ON' : 'OFF'));
 }
 
-var _origAddTradeLog = null;
-function patchAddTradeLog() {
-  if (typeof addTradeLog === 'function' && !_origAddTradeLog) {
-    _origAddTradeLog = addTradeLog;
-    addTradeLog = function(msg) {
-      _origAddTradeLog(msg);
-      var m = msg.match(/P&L:.*?₹([\+\-]?[\d,]+)/);
-      if (m) { /* handled in manualClose/checkTradeSignal */ }
-    };
-  }
-}
-setTimeout(patchAddTradeLog, 500);
-
 function getISTNow() {
   var now = new Date();
   var istMs = now.getTime() + (5.5 * 3600000);
@@ -1922,20 +1791,14 @@ function getISTNow() {
   return { h: ist.getUTCHours(), m: ist.getUTCMinutes(), total: ist.getUTCHours() * 60 + ist.getUTCMinutes() };
 }
 
-// ══════════════════════════════════════════
-// UPDATED checkTradeSignal — SL/TP logic refined
-// ══════════════════════════════════════════
 function checkTradeSignal(signal, spot) {
   if (!tradeRunning) return;
-
   var validSignal = (signal === 'BULL' || signal === 'BEAR');
-
   var ist = getISTNow();
   var marketOpen  = 9 * 60 + 15;
   var marketClose = 15 * 60 + 25;
   var inMarket = (ist.total >= marketOpen && ist.total <= marketClose);
 
-  // EOD auto-exit
   if (!inMarket) {
     if (tradeEntry && tradeEntry.signal && ist.total > marketClose) {
       var eodPnl = tradeEntry.signal === 'BULL' ? spot - tradeEntry.entry : tradeEntry.entry - spot;
@@ -1958,31 +1821,19 @@ function checkTradeSignal(signal, spot) {
   var timeStr = now.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', hour12: false });
   var nowMs = now.getTime();
 
-  // New entry
   if (!tradeEntry || !tradeEntry.signal) {
     if (!validSignal) return;
-    tradeEntry = {
-      entryTime: timeStr,
-      signal: signal,
-      entry: spot,
-      qty: parseInt($('tradeQty').value) || 1,
-      entryMs: nowMs
-    };
+    tradeEntry = { entryTime: timeStr, signal: signal, entry: spot, qty: parseInt($('tradeQty').value) || 1, entryMs: nowMs };
     trailSLPeak = spot;
     addTradeLog('Entry ' + signal + ' @ ' + spot.toFixed(2) + ' | Qty: ' + tradeEntry.qty);
     updateActiveTrade(spot);
     return;
   }
 
-  // Minimum hold time (60 seconds) to prevent rapid flipping
   var heldMs = nowMs - (tradeEntry.entryMs || nowMs);
   var minHoldMs = 60000;
-  if (heldMs < minHoldMs) {
-    updateActiveTrade(spot);
-    return;
-  }
+  if (heldMs < minHoldMs) { updateActiveTrade(spot); return; }
 
-  // Reversal signal handling
   if (validSignal && signal !== tradeEntry.signal) {
     var revPnl = tradeEntry.signal === 'BULL' ? spot - tradeEntry.entry : tradeEntry.entry - spot;
     var revPct = (revPnl / tradeEntry.entry) * 100;
@@ -1991,13 +1842,7 @@ function checkTradeSignal(signal, spot) {
     sessionTradeCount++;
     if (revPnl > 0) sessionWins++;
     addTradeLog('Rev Exit @ ' + spot.toFixed(2) + ' | P&L: ' + revPct.toFixed(2) + '% | ₹' + Math.round(revPnlRs).toLocaleString('en-IN'));
-    tradeEntry = {
-      entryTime: timeStr,
-      signal: signal,
-      entry: spot,
-      qty: parseInt($('tradeQty').value) || 1,
-      entryMs: nowMs
-    };
+    tradeEntry = { entryTime: timeStr, signal: signal, entry: spot, qty: parseInt($('tradeQty').value) || 1, entryMs: nowMs };
     trailSLPeak = spot;
     addTradeLog('Entry ' + signal + ' @ ' + spot.toFixed(2) + ' | Qty: ' + tradeEntry.qty);
     updateActiveTrade(spot);
@@ -2005,13 +1850,11 @@ function checkTradeSignal(signal, spot) {
     return;
   }
 
-  // SL/TP check
   if (tradeEntry && tradeEntry.signal && spot > 0) {
     var pnl = tradeEntry.signal === 'BULL' ? spot - tradeEntry.entry : tradeEntry.entry - spot;
     var pnlPct = (pnl / tradeEntry.entry) * 100;
     var sl = parseFloat($('tradeSL').value) || 0.5;
     var tp = parseFloat($('tradeTP').value) || 1.5;
-
     if (pnlPct <= -sl || pnlPct >= tp) {
       var reason = pnlPct >= tp ? 'TP ✓' : 'SL ✗';
       var pnlRs = pnl * 65 * (parseInt($('tradeQty').value)||1);
@@ -2026,8 +1869,6 @@ function checkTradeSignal(signal, spot) {
       return;
     }
   }
-
-  // Update live trade display
   updateActiveTrade(spot);
 }
 
@@ -2064,30 +1905,11 @@ function toggleTradeBot() {
     $('tradeStatus').textContent = 'Running (' + tradeMode + ')' + (inMkt ? ' 🟢 Market Open' : ' 🔴 Market Closed');
     $('tradeStatus').className = 'trade-status running';
     addTradeLog('Bot started [' + tradeMode + '] | Market: ' + (inMkt ? 'OPEN' : 'CLOSED — waiting 09:15'));
-    if (window._botStatusTimer) clearInterval(window._botStatusTimer);
-    window._botStatusTimer = setInterval(function() {
-      if (!tradeRunning) { clearInterval(window._botStatusTimer); return; }
-      var t = getISTNow();
-      var inM = t.total >= marketOpen && t.total <= marketClose;
-      $('tradeStatus').textContent = 'Running (' + tradeMode + ')' + (inM ? ' 🟢 Market Open' : ' 🔴 Market Closed');
-    }, 30000);
   }
 }
 
 function setTradeMode() {
   tradeMode = document.querySelector('input[name="tradeMode"]:checked').value;
-}
-
-function toggleConf2x() {
-  require2Consecutive = document.getElementById('conf2x').checked;
-  try { localStorage.setItem('conf2x', require2Consecutive ? '1' : '0'); } catch(e) {}
-  addTradeLog('2-Consecutive: ' + (require2Consecutive ? 'ON' : 'OFF'));
-}
-
-function toggleSkipPCR() {
-  skipHighPCR = document.getElementById('skipPCR').checked;
-  try { localStorage.setItem('skip_pcr', skipHighPCR ? '1' : '0'); } catch(e) {}
-  addTradeLog('Skip PCR>1.2: ' + (skipHighPCR ? 'ON' : 'OFF'));
 }
 
 function toggleTrade() {
@@ -2102,25 +1924,17 @@ function toggleMinimize(type) {
     chartMinimized = !chartMinimized;
     card.classList.toggle('minimized', chartMinimized);
     $('minChartBtn').textContent = chartMinimized ? '+' : '−';
-    if (chart && !chartMinimized) {
-      var wrap = $('chartWrap');
-      chart.resize(wrap.clientWidth, wrap.clientHeight);
-    }
+    if (chart && !chartMinimized) chart.resize($('chartWrap').clientWidth, $('chartWrap').clientHeight);
   } else if (type === 'chain') {
     chainMinimized = !chainMinimized;
     var card = document.querySelector('.chain-card');
     if (card) card.style.display = chainMinimized ? 'none' : 'block';
-    var btn = $('minChainBtn');
-    if (btn) btn.textContent = chainMinimized ? '+' : '−';
+    $('minChainBtn').textContent = chainMinimized ? '+' : '−';
   } else if (type === 'ema') {
     emaMinimized = !emaMinimized;
     var leg = $('emaLeg');
-    if (emaMinimized) {
-      if (leg) leg.style.display = 'none';
-    } else {
-      if (leg) leg.style.display = 'flex';
-      redrawEMAs();
-    }
+    if (emaMinimized) leg.style.display = 'none';
+    else { leg.style.display = 'flex'; redrawEMAs(); }
     try { localStorage.setItem('ema_minimized', emaMinimized ? '1' : '0'); } catch(e) {}
   }
 }
@@ -2138,20 +1952,12 @@ function renderSigLog() {
     return;
   }
   var html = signalLog.slice().reverse().map(function(s) {
-    var isWait = s.displaySig && s.displaySig.indexOf('wait') >= 0;
     var isRev  = s.isReversal;
-    var label, cls;
-    if (isRev) {
-      label = s.displaySig;
-      cls   = s.signal === 'BULL' ? 'bull' : 'bear';
-    } else {
-      label = s.signal === 'BULL' ? 'BUY CE' : 'BUY PE';
-      cls   = s.signal === 'BULL' ? 'bull' : 'bear';
-    }
-    var waitBadge = isWait ? ' <span style="color:var(--yellow);font-size:9px;">(wait)</span>' : '';
+    var label = s.displaySig || (s.signal === 'BULL' ? 'BUY CE' : 'BUY PE');
+    var cls   = s.signal === 'BULL' ? 'bull' : 'bear';
     var revBadge  = isRev  ? ' <span style="background:rgba(255,153,0,0.15);color:#ff9900;padding:1px 5px;border-radius:3px;font-size:9px;">REVERSAL</span>' : '';
     return '<div class="sig-item"><span class="sig-time">' + (s.time.split(',')[1] || s.time) + '</span>'
-      + '<span class="sig-type ' + cls + '">' + label + waitBadge + revBadge + '</span>'
+      + '<span class="sig-type ' + cls + '">' + label + revBadge + '</span>'
       + '<span style="color:var(--t2);font-size:10px;">' + s.symbol + ' | Spot:' + s.spot + '</span></div>';
   }).join('');
   $('sigLogBody').innerHTML = html;
@@ -2162,10 +1968,7 @@ function saveSignalLog() {
 }
 
 function loadSignalLog() {
-  try {
-    var raw = localStorage.getItem('sig_log');
-    if (raw) signalLog = JSON.parse(raw);
-  } catch(x) { signalLog = []; }
+  try { var raw = localStorage.getItem('sig_log'); if (raw) signalLog = JSON.parse(raw); } catch(x) { signalLog = []; }
 }
 
 function addEMA() {
@@ -2269,11 +2072,7 @@ function pickColor(c) {
     el.classList.toggle('sel', rgbToHex(el.style.backgroundColor) === toHexColor(c));
   });
 }
-function toHexColor(c) {
-  if (!c) return '#ffffff';
-  if (c.startsWith('#')) return c.length === 7 ? c : c;
-  return rgbToHex(c) || c;
-}
+function toHexColor(c) { if (!c) return '#ffffff'; if (c.startsWith('#')) return c.length === 7 ? c : c; return rgbToHex(c) || c; }
 function rgbToHex(rgb) {
   var m = rgb.match(/\d+/g);
   if (!m || m.length < 3) return null;
@@ -2291,14 +2090,9 @@ function toggleAuto() {
 
 function startAuto() {
   if (refreshTimer) clearInterval(refreshTimer);
-  refreshTimer = setInterval(function() {
-    if (curIK && tok) liveUpdate();
-  }, 5000);
+  refreshTimer = setInterval(function() { if (curIK && tok) liveUpdate(); }, 5000);
   if (chainTimer) clearInterval(chainTimer);
-  chainTimer = setInterval(function() {
-    var k = curIK, ex = $('expSel').value;
-    if (k && ex) fetchChain();
-  }, 60000);
+  chainTimer = setInterval(function() { var k = curIK, ex = $('expSel').value; if (k && ex) fetchChain(); }, 60000);
 }
 
 function doLogin() {
